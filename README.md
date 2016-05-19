@@ -20,3 +20,8 @@ Usage
 `./toggl2jira.py` to scan Toggl for a day's work.  If no date is supplied, defaults to today.
 If a date has no work, runs again for previous day.  Uses `dateparser` so it understands some
 human-friendly terms such as "yesterday".
+
+Upon first usage, and occasionally thereafter, you will be prompted to go through a silly
+OAuth login dance.
+
+At the prompt, type "go" to load the work into JIRA.
