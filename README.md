@@ -14,6 +14,12 @@ Installation
 
     git clone git@gist.github.com:5f849db6bba401583e1758b90abf301b.git toggl2jira
 
+Upgrading
+=========
+
+    cd toggl2jira
+    git pull --no-edit
+
 Usage
 =====
 
