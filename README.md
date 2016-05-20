@@ -12,7 +12,7 @@ Clone and install `toggl-api`
 Installation
 ============
 
-Save `toggl2jira.py` somewhere.  Make sure you have permission to read and execute it.
+    git clone git@gist.github.com:5f849db6bba401583e1758b90abf301b.git toggl2jira
 
 Usage
 =====
