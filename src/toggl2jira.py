@@ -41,18 +41,15 @@ ticket_map = {
 
 def main(argv=None):
 	parser = argparse.ArgumentParser("Toggl -> JIRA")
-	parser.add_argument("date", nargs='*')
+	parser.add_argument("start_date")
+	parser.add_argument("end_date", nargs='?')
 	parser.add_argument("-v", "--verbose", action='store_true')
 	args = parser.parse_args(argv)
-	if args.date:
-		args.date = ' '.join(args.date)
-	else:
-		args.date = None
 	with open(TOGGL_KEY_FILE) as fh:
 		toggl_api_key = fh.read().rstrip()
 
 	try:
-		dr = DateRange(args.date)
+		dr = DateRange(args.start_date, args.end_date)
 	except ValueError as err:
 		print(err, file=sys.stderr)
 		return 1
