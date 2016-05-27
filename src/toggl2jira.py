@@ -32,6 +32,7 @@ ticket_map = {
 	'devops':      'HO-3201',
 	'cdc':         'PLAT-178',
 	'engineering': 'ENG-778',
+	'eng-train':   'ENG-785',
 	'support':     'proserve',
 	'ps':          'proserve',
 	'sup':         'support',
