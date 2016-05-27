@@ -40,10 +40,13 @@ ticket_map = {
 }
 
 def main(argv=None):
-	parser = argparse.ArgumentParser("Toggl -> JIRA")
-	parser.add_argument("start_date")
-	parser.add_argument("end_date", nargs='?')
-	parser.add_argument("-v", "--verbose", action='store_true')
+	parser = argparse.ArgumentParser(description="Worklog loader from Toggl to Jira")
+	parser.add_argument("start_date", nargs='?',
+		help="beginning date to load (default: today)")
+	parser.add_argument("end_date", nargs='?',
+		help="end date to load (default: start_date)")
+	parser.add_argument("-v", "--verbose", action='store_true',
+		help="more information")
 	args = parser.parse_args(argv)
 	with open(TOGGL_KEY_FILE) as fh:
 		toggl_api_key = fh.read().rstrip()
@@ -57,31 +60,47 @@ def main(argv=None):
 	toggl = TogglAPI(toggl_api_key)
 	jira = connect_jira()
 
-	while True:
+	def get(dates):
 		if args.verbose:
 			print("Loading activity for {}".format(dr.dates))
-		entries = toggl.get_time_entries(*dr.tuple())
-		if entries:
-			entries = process_entries(entries)
-			break
-		dr.decrement_day()
+		return toggl.get_time_entries(*dates)
 
-	entries.sort()
+	if dr.one_day:
+		while True:
+			entries = get(dr.tuple())
+			if entries:
+				entries = process_entries(entries)
+				break
+			dr.decrement_day()
+		code = load(entries)
+		if code != 0:
+			return code
+	else:
+		for pair in dr.days():
+			code = load(process_entries(get(pair)))
+			if code != 0:
+				return code
 
-	output = [[human_date(e.date), e.ticket, e.duration, e.alias, e.message] for e in entries]
-	print(tabulate(output, tablefmt='plain'))
+	return 0
 
-	try:
-		if raw_input("Type 'go' to approve the above worklog: ") != "go":
-			return 0
-	except KeyboardInterrupt:
-		print()
-		return 2
+def load(entries):
+	if entries:
+		entries.sort()
 
-	for entry in entries:
-		print("Adding {} to {}".format(entry.duration, entry.ticket))
-		jira.add_worklog(entry.ticket, entry.duration, started=entry.date,
-		                 comment=entry.message)
+		output = [[human_date(e.date), e.ticket, e.duration, e.alias, e.message] for e in entries]
+		print(tabulate(output, tablefmt='plain'))
+
+		try:
+			if raw_input("Type 'go' to approve the above worklog: ") != "go":
+				return 0
+		except KeyboardInterrupt:
+			print()
+			return 2
+
+		for entry in entries:
+			print("Adding {} to {}".format(entry.duration, entry.ticket))
+			jira.add_worklog(entry.ticket, entry.duration, started=entry.date,
+			                 comment=entry.message)
 	return 0
 
 def human_date(date):

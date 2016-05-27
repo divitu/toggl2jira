@@ -8,6 +8,6 @@ setup(
 	author='Colin von Heuring',
 	author_email='colin@von.heuri.ng',
 	install_requires=['jira', 'python-dateutil', 'requests', 'tabulate',
-	                  'toggl-api'],
+	                  'toggl-api>=0.1.1'],
 	scripts=['scripts/toggl2jira'],
 )
